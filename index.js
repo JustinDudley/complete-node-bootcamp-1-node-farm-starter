@@ -1,5 +1,6 @@
 const fs = require("fs");
 const http = require("http"); // with this built-in module, we can build an http server
+const url = require("url");
 
 ///////////////////////////
 // FILES
@@ -37,8 +38,23 @@ fs.readFile("./txt/start.txt", "utf-8", (err, data1) => {
 // The callback will be fired off each time a new request hits our server.
 const server = http.createServer((req, res) => {
   // logging the request from the browser will yield a ton of information, including headers, ...
-  console.log("req is: ", req);
-  res.end("Hello from the server!");
+  //   console.log("req is: ", req);
+  console.log(req.url);
+
+  const pathname = req.url;
+  if (pathname === "/" || pathname === "/overview") {
+    res.end("This is the OVERVIEW page");
+  } else if (pathname === "/product") {
+    res.end("This is the PRODUCT page");
+  } else {
+    // send 404 status code, and message
+    res.writeHead(
+      404
+      //    , {"Content-type": "text/html", }     // could choose a different Content-type...
+    );
+    res.end("Page Not Found, yo");
+    // res.end("<h1>Page not found, yo</h1>");    //  ...and then put in html here
+  }
 });
 
 // Now we USE our new server
