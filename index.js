@@ -1,4 +1,8 @@
 const fs = require("fs");
+const http = require("http"); // with this built-in module, we can build an http server
+
+///////////////////////////
+// FILES
 
 // blockig, synchronous reading of file
 const textIn = fs.readFileSync("./txt/input.txt", "utf-8");
@@ -24,3 +28,25 @@ fs.readFile("./txt/start.txt", "utf-8", (err, data1) => {
     });
   });
 });
+
+/////////////////////////
+// SERVER
+
+// createServer() is a method on the http object
+// createServer accepts a callback function [(req,res) => ...].
+// The callback will be fired off each time a new request hits our server.
+const server = http.createServer((req, res) => {
+  // logging the request from the browser will yield a ton of information, including headers, ...
+  console.log("req is: ", req);
+  res.end("Hello from the server!");
+});
+
+// Now we USE our new server
+// We start up the server. It is now listening for incoming requests
+// There is an event loop involved. The server keeps listening, the app doesn't just stop.
+server.listen(
+  8000,
+  "127.0.0.1",
+  /* optional third parameter for callback */ () =>
+    console.log("Server is listening on PORT 8000")
+);
