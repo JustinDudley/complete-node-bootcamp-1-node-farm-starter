@@ -38,6 +38,9 @@ fs.readFile("./txt/start.txt", "utf-8", (err, data1) => {
 // time a user hits the endpoint.  But this stuff here gets run only once, so it's
 // okay that we're doing a synchronous read here in the top-level.
 
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const dataObj = JSON.parse(data);
+
 // createServer() is a method on the http object
 // createServer accepts a callback function [(req,res) => ...].
 // The callback will be fired off each time a new request hits our server.
@@ -52,20 +55,13 @@ const server = http.createServer((req, res) => {
   } else if (pathname === "/product") {
     res.end("This is the PRODUCT page");
   } else if (pathname === "/api") {
-    // fs.readFile("./dev-data/data.json" ...etc.);
-    fs.readFile(`${__dirname}/dev-data/data.json`, "utf-8", (err, data) => {
-      const productData = JSON.parse(data);
-      console.log(productData);
-      res.writeHead(200, { "Content-type": "application/json" });
-      // send the original JSON string, not the js object
-      res.end(data);
-      //   res.end("API");
-    });
+    res.writeHead(200, { "Content-type": "application/json" });
+    res.end(data); // sending orig json object
   } else {
     // send 404 status code, and message
     res.writeHead(
       404
-      //    , {"Content-type": "text/html", }     // could choose a different Content-type...
+      //    , {"Content-type": "text/html", }     // could choose a different Content-type like html...
     );
     res.end("Page Not Found, yo");
     // res.end("<h1>Page not found, yo</h1>");    //  ...and then put in html here
