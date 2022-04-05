@@ -33,6 +33,11 @@ fs.readFile("./txt/start.txt", "utf-8", (err, data1) => {
 /////////////////////////
 // SERVER
 
+// First, here is the 'top-level' code.  It only gets run ONCE when the server gets turned on.
+// The code below the top-level code, the stuff within the server blocks, gets run each
+// time a user hits the endpoint.  But this stuff here gets run only once, so it's
+// okay that we're doing a synchronous read here in the top-level.
+
 // createServer() is a method on the http object
 // createServer accepts a callback function [(req,res) => ...].
 // The callback will be fired off each time a new request hits our server.
