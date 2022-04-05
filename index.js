@@ -46,6 +46,15 @@ const server = http.createServer((req, res) => {
     res.end("This is the OVERVIEW page");
   } else if (pathname === "/product") {
     res.end("This is the PRODUCT page");
+  } else if (pathname === "/api") {
+    // fs.readFile("./dev-data/data.json" ...etc.);
+    fs.readFile(`${__dirname}/dev-data/data.json`, "utf-8", (err, data) => {
+      const productData = JSON.parse(data);
+      console.log(productData);
+      // send the original JSON string
+      res.end(data);
+      //   res.end("API");
+    });
   } else {
     // send 404 status code, and message
     res.writeHead(
