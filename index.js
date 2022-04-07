@@ -7,7 +7,6 @@ const url = require("url");
 
 // blockig, synchronous reading of file
 const textIn = fs.readFileSync("./txt/input.txt", "utf-8");
-console.log(textIn);
 const textOut = `This is what we know about the avocado: ${textIn}.\nCreated ${Date.now()}`;
 fs.writeFileSync("./txt/output.txt", textOut);
 console.log("File written !");
@@ -55,9 +54,9 @@ const templateProduct = fs.readFileSync(
   "utf-8"
 );
 
-const replaceTemplate = (templateCard, product) => {
+const injectTemplate = (template, product) => {
   // use regex g to ensure ALL intances get replaced
-  let output = templateCard.replace(/{%PRODUCTNAME%}/g, product.productName);
+  let output = template.replace(/{%PRODUCTNAME%}/g, product.productName);
   output = output.replace(/{%IMAGE%}/g, product.image);
   output = output.replace(/{%QUANTITY%}/g, product.quantity);
   output = output.replace(/{%PRICE%}/g, product.price);
@@ -76,26 +75,28 @@ const replaceTemplate = (templateCard, product) => {
 // createServer accepts a callback function [(req,res) => ...].
 // The callback will be fired off each time a new request hits our server.
 const server = http.createServer((req, res) => {
-  // logging the request from the browser will yield a ton of information, including headers, ...
-  //   console.log("req is: ", req);
-  console.log(req.url);
-
-  const pathname = req.url;
+  // the req object has a ton of info, including req.url, the path the user put into the browser
+  // second arg, "true", makes your url query parameters get parsed into an object
+  const { query, pathname } = url.parse(req.url, true);
 
   // overview page
   if (pathname === "/" || pathname === "/overview") {
     // create an array of cards of html
     const htmlCards = products.map((product) =>
-      replaceTemplate(templateCard, product)
+      injectTemplate(templateCard, product)
     );
     const htmlString = htmlCards.join(""); //turn array into string
     res.writeHead(200, { "Content-type": "text/html" });
-    // now we NEST one html document inside another
+    // now we NEST one html string inside another. In effect, two of the html files in the file structure are delivered as a single string.
     res.end(templateOverview.replace(/{%PRODUCT_CARDS%}/g, htmlString));
 
     // product page
   } else if (pathname === "/product") {
-    res.end("This is the PRODUCT page");
+    const product = products[query.id];
+    const productHtml = injectTemplate(templateProduct, product);
+
+    res.writeHead(200, { "Content-type": "text/html" }); // unnecessary line? Wasn't in Jonas's lesson
+    res.end(productHtml);
 
     // API
   } else if (pathname === "/api") {
