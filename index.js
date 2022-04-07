@@ -39,7 +39,38 @@ fs.readFile("./txt/start.txt", "utf-8", (err, data1) => {
 // okay that we're doing a synchronous read here in the top-level.
 
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
-const dataObj = JSON.parse(data);
+const products = JSON.parse(data);
+
+// read html files into variables, synchronous i/o:
+const templateCard = fs.readFileSync(
+  `${__dirname}/templates/template-card.html`,
+  "utf-8"
+);
+const templateOverview = fs.readFileSync(
+  `${__dirname}/templates/template-overview.html`,
+  "utf-8"
+);
+const templateProduct = fs.readFileSync(
+  `${__dirname}/templates/template-product.html`,
+  "utf-8"
+);
+
+const replaceTemplate = (templateCard, product) => {
+  // use regex g to ensure ALL intances get replaced
+  let output = templateCard.replace(/{%PRODUCTNAME%}/g, product.productName);
+  output = output.replace(/{%IMAGE%}/g, product.image);
+  output = output.replace(/{%QUANTITY%}/g, product.quantity);
+  output = output.replace(/{%PRICE%}/g, product.price);
+  output = output.replace(/{%FROM%}/g, product.from);
+  output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
+  output = output.replace(/{%DESCRIPTION%}/g, product.description);
+  output = output.replace(/{%ID%}/g, product.id);
+
+  if (!product.organic) {
+    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
+  }
+  return output;
+};
 
 // createServer() is a method on the http object
 // createServer accepts a callback function [(req,res) => ...].
@@ -50,13 +81,28 @@ const server = http.createServer((req, res) => {
   console.log(req.url);
 
   const pathname = req.url;
+
+  // overview page
   if (pathname === "/" || pathname === "/overview") {
-    res.end("This is the OVERVIEW page");
+    // create an array of cards of html
+    const htmlCards = products.map((product) =>
+      replaceTemplate(templateCard, product)
+    );
+    const htmlString = htmlCards.join(""); //turn array into string
+    res.writeHead(200, { "Content-type": "text/html" });
+    // now we NEST one html document inside another
+    res.end(templateOverview.replace(/{%PRODUCT_CARDS%}/g, htmlString));
+
+    // product page
   } else if (pathname === "/product") {
     res.end("This is the PRODUCT page");
+
+    // API
   } else if (pathname === "/api") {
     res.writeHead(200, { "Content-type": "application/json" });
     res.end(data); // sending orig json object
+
+    // Not Found
   } else {
     // send 404 status code, and message
     res.writeHead(
