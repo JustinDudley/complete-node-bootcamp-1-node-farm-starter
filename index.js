@@ -1,21 +1,15 @@
 const fs = require("fs");
-const http = require("http"); // with this built-in module, we can build an http server
+const http = require("http");
 const url = require("url");
 
 ///////////////////////////
 // FILES
 
-// blockig, synchronous reading of file
-const textIn = fs.readFileSync("./txt/input.txt", "utf-8");
+const textIn = fs.readFileSync("./txt/input.txt", "utf-8"); // blocking
 const textOut = `This is what we know about the avocado: ${textIn}.\nCreated ${Date.now()}`;
 fs.writeFileSync("./txt/output.txt", textOut);
 console.log("File written !");
 
-// non-blocking, asynchronous reading, basic
-// fs.readFile("./txt/start.txt", "utf-8", (err, data) => console.log(data));
-// console.log("will read file...");
-
-// non-blocking, asynchronous reading, more advanced  (BUT uses callback hell)
 fs.readFile("./txt/start.txt", "utf-8", (err, data1) => {
   //   if (err) {return console.log("error reading first file ");}
   fs.readFile(`./txt/${data1}.txt`, "utf-8", (err, data2) => {
@@ -32,15 +26,8 @@ fs.readFile("./txt/start.txt", "utf-8", (err, data1) => {
 /////////////////////////
 // SERVER
 
-// First, here is the 'top-level' code.  It only gets run ONCE when the server gets turned on.
-// The code below the top-level code, the stuff within the server blocks, gets run each
-// time a user hits the endpoint.  But this stuff here gets run only once, so it's
-// okay that we're doing a synchronous read here in the top-level.
-
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const products = JSON.parse(data);
-
-// read html files into variables, synchronous i/o:
 const templateCard = fs.readFileSync(
   `${__dirname}/templates/template-card.html`,
   "utf-8"
@@ -55,7 +42,6 @@ const templateProduct = fs.readFileSync(
 );
 
 const injectTemplate = (template, product) => {
-  // use regex g to ensure ALL intances get replaced
   let output = template.replace(/{%PRODUCTNAME%}/g, product.productName);
   output = output.replace(/{%IMAGE%}/g, product.image);
   output = output.replace(/{%QUANTITY%}/g, product.quantity);
@@ -71,23 +57,16 @@ const injectTemplate = (template, product) => {
   return output;
 };
 
-// createServer() is a method on the http object
-// createServer accepts a callback function [(req,res) => ...].
-// The callback will be fired off each time a new request hits our server.
 const server = http.createServer((req, res) => {
-  // the req object has a ton of info, including req.url, the path the user put into the browser
-  // second arg, "true", makes your url query parameters get parsed into an object
   const { query, pathname } = url.parse(req.url, true);
 
   // overview page
   if (pathname === "/" || pathname === "/overview") {
-    // create an array of cards of html
     const htmlCards = products.map((product) =>
       injectTemplate(templateCard, product)
     );
-    const htmlString = htmlCards.join(""); //turn array into string
+    const htmlString = htmlCards.join("");
     res.writeHead(200, { "Content-type": "text/html" });
-    // now we NEST one html string inside another. In effect, two of the html files in the file structure are delivered as a single string.
     res.end(templateOverview.replace(/{%PRODUCT_CARDS%}/g, htmlString));
 
     // product page
@@ -101,23 +80,16 @@ const server = http.createServer((req, res) => {
     // API
   } else if (pathname === "/api") {
     res.writeHead(200, { "Content-type": "application/json" });
-    res.end(data); // sending orig json object
+    res.end(data);
 
     // Not Found
   } else {
-    // send 404 status code, and message
-    res.writeHead(
-      404
-      //    , {"Content-type": "text/html", }     // could choose a different Content-type like html...
-    );
+    res.writeHead(404);
     res.end("Page Not Found, yo");
-    // res.end("<h1>Page not found, yo</h1>");    //  ...and then put in html here
   }
 });
 
-// Now we USE our new server
-// We start up the server. It is now listening for incoming requests
-// There is an event loop involved. The server keeps listening, the app doesn't just stop.
+// Now we USE the server we just defined
 server.listen(
   8000,
   "127.0.0.1",
@@ -125,6 +97,7 @@ server.listen(
     console.log("Server is listening on PORT 8000")
 );
 
+//
 // This is the code Jonas first wrote.
 // He used an asynchronous readFile WITHIN the routing block.
 // It had a callback, being asynchronous
