@@ -2,7 +2,7 @@ const fs = require("fs");
 const http = require("http");
 const url = require("url");
 
-const slugify = require("slugify");
+const slugify = require("slugify"); // https://www.npmjs.com/package/slugify
 
 const injectTemplate = require("./modules/injectTemplate");
 
@@ -32,6 +32,12 @@ fs.readFile("./txt/start.txt", "utf-8", (err, data1) => {
 
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const products = JSON.parse(data);
+const slugs = products.map((product) =>
+  slugify(product.productName, {
+    lower: true,
+  })
+);
+console.log(slugs);
 const templateCard = fs.readFileSync(
   `${__dirname}/templates/template-card.html`,
   "utf-8"
