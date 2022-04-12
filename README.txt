@@ -4,7 +4,7 @@ Jonas Schmedtmann.
 
 NodeJS Express Mongodb Bootcamp
 https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/
-Section 2, chapters 4 - 17
+Section 2, chapters 4 - 22
 
 The meat of the index.js is the section under the comment: //SERVER
 
