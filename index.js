@@ -35,12 +35,15 @@ fs.readFile('./txt/start.txt', 'utf-8', (err, data1) => {
 
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const products = JSON.parse(data);
+
+// slugs are never used, they were only included to show use of npm packages
 const slugs = products.map((product) =>
     slugify(product.productName, {
         lower: true,
     })
 );
 console.log(slugs);
+
 const templateCard = fs.readFileSync(
     `${__dirname}/templates/template-card.html`,
     'utf-8'
@@ -90,6 +93,6 @@ const server = http.createServer((req, res) => {
 server.listen(
     8000,
     '127.0.0.1',
-    /* optional third parameter for callback */ () =>
-        console.log('Server is listening on PORT 8000')
+    // optional third parameter for callback
+    () => console.log('Server is listening on PORT 8000')
 );
