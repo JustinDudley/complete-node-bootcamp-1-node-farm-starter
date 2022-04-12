@@ -21,3 +21,6 @@ It was copy-pasted near the end of the project.  It may not
 quite be functional. In particular, the function called injectTemplate
 is still included in the file; it has not yet been abstracted to its
 own module.
+
+To run:
+$ node index.js
