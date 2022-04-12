@@ -22,5 +22,10 @@ quite be functional. In particular, the function called injectTemplate
 is still included in the file; it has not yet been abstracted to its
 own module.
 
+There is an OXBOX in github for this project.  It was made before 
+the package.json, and node_modules, and slugify, and prettier, were added. The functionality
+of the oxbow is exactly the same as the final functionality, I believe. 
+The oxbow may just look a bit cleaner, without some of the bells and whistles.
+
 To run:
 $ node index.js
