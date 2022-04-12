@@ -2,6 +2,8 @@ const fs = require("fs");
 const http = require("http");
 const url = require("url");
 
+const slugify = require("slugify");
+
 const injectTemplate = require("./modules/injectTemplate");
 
 ///////////////////////////
@@ -82,25 +84,3 @@ server.listen(
   /* optional third parameter for callback */ () =>
     console.log("Server is listening on PORT 8000")
 );
-
-//
-// This is the code Jonas first wrote.
-// He used an asynchronous readFile WITHIN the routing block.
-// It had a callback, being asynchronous
-// Later, we put this I/O at the top level, putting the data into a
-// variable, synchronously
-
-// else if (pathname === "/api") {
-//     // fs.readFile("./dev-data/data.json" ...etc.);
-//     fs.readFile(`${__dirname}/dev-data/data.json`, "utf-8", (err, data) => {
-//       const productData = JSON.parse(data);
-//       console.log(productData);
-//       res.writeHead(200, { "Content-type": "application/json" });
-//       // send the original JSON string, not the js object
-//       res.end(data);
-//       //   res.end("API");
-//     }
-//     );
-//   }
-
-// 🐔
